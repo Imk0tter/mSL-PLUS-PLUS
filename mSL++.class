@@ -123,7 +123,7 @@ alias Class.EXCEPTION.ParamErr {
   return Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
 }
 alias Class.EXCEPTION.RangeErr {
- var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
+  var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
   return Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
 }
 ;;;;;;;;;;;;;;;
@@ -189,7 +189,7 @@ alias Class {
 ;;;;;;;;;;;;;;;;;
 ; Class Methods ;
 ;;;;;;;;;;;;;;;;;
-alias -l Class.INIT {
+alias Class.INIT {
   var %params $1
   var %htable MSL++
   hinc -m %htable OBJECT_NUMBER
