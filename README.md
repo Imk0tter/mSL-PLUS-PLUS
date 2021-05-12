@@ -1,7 +1,8 @@
 To make your own class, use the framework below (change ClassName to what ever classname your class is)
 
 There are only two places to change the classname: in the alias header and the %Class variable.
-[code]
+
+
 alias ClassName {
   var %Class ClassName
   var %prop $mprop($prop)
@@ -54,4 +55,4 @@ alias ClassName {
       return $catch(%class,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop($prop))) is not a public member of class $qt(%Class)).class  
     }
   }
-}[/code]
+}
