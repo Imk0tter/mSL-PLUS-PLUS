@@ -71,7 +71,11 @@ alias ClassName.INIT {
 }
 ````
 
+
+
 Below is the main class of mSL++, which can be used to get and set variables.
+
+
 
 
 ````
