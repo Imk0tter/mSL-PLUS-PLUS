@@ -24,7 +24,7 @@ alias List.INSERT.PUBLIC
 ; Exception Declarations ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 alias List.EXCEPTION.RangeErr {
- var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
+  var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
   return Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
 }
 ;;;;;;;;;;;;;;
@@ -189,8 +189,8 @@ alias List.INSERT {
   var %x $calc(1 + ((%range - 1) * 16)),%y $calc(%x + 16)
   bcopy &items %y &items %x -1
   bset -at &items %x %value
-  - $Class($1,%value,%variable).setv
-  - $Class($1,ITEMS,&items).setb
+  - $Class($1,%value,%variable).SET
+  - $Class($1,ITEMS,&items).SET:BVAR
 
   if $prop {
     var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
@@ -229,8 +229,12 @@ alias List.ADD {
   - BVAR CONTENTS: $bvar(&items,1,%bvarcount).text
   bset -at &items $calc(1 + (($class(%object,COUNT).GET - 1) * 16)) %x
   - $Class(%object,ITEMS,&items).SET:BVAR
-  - $iif($bvar(%value,0),$Class(%object,%x,%value).SET:BVAR,$Class(%object,%x,%value).SET)
-
+  if $cprop(%params,BVAR) || $cprop(%params,B) {
+    - $Class(%object,%x,%value).SET:BVAR
+  }
+  else {
+    - $Class(%object,%x,%value).SET
+  }
   if $prop {
     var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
     maketok MAKETOK V List
@@ -264,8 +268,19 @@ alias List.GET {
   - $Class(%object,ITEMS,&items).GET:BVAR
 
   var %var2 $bvar(&items,$calc(1 + ((%range - 1) * 16)),16).text
+  var %return, %start 1
 
-  var %return $Class(%object,%var2).GET
+  if $cprop(%params,BVAR) || $cprop(%params,B) {
+    var %bvar $4
+    var %return $Class(%object,%var2,%bvar).GET:BVAR
+    var %start 5
+
+  }
+  else {
+    var %return $Class(%object,%var2).GET
+    var %start 4
+  }
+  
   if $prop {
     var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
     maketok MAKETOK V List
@@ -278,16 +293,17 @@ alias List.GET {
     $iif($cprop(%params,STACK),maketok MAKETOK V %return)
     var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
 
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 4
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + %start
+    
     maketok MAKETOK V $*
     $iif(!$cprop(%params,STACK),maketok MAKETOK V %return)
     var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
-    
+
     echo -a PROP: $prop RETURN: %return
     return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
   }
   if ($hget(MAKETOK)) hfree MAKETOK
-  return $Class(%object,%var2).GET
+  return %return
 }
 alias List.SET {
   var %params $1
