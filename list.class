@@ -1,0 +1,448 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Description: This class can be used as a dynamically sized      ;
+; List to store any data type                                     ;
+;                                                                 ;
+; Usage: $List(<ListPtr>,<Params>,...).<Member>                   ;
+; Example: var %x = $List                                         ;
+; Example: var %itemID = $List(%x,$long(500)).add                 ;
+; Example: $List(%x,%itemID,$long(499)).set                       ;
+; Example: $List(%x,%ItemID).remdel                               ;
+; Example: $List(%x).delete                                       ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;
+; Public Declarations ;
+;;;;;;;;;;;;;;;;;;;;;;;
+alias List.FREE.PUBLIC
+alias List.ADD.PUBLIC
+alias List.REMOVE.PUBLIC
+alias List.UNSET.PUBLIC
+alias List.GET.PUBLIC
+alias List.COUNT.PUBLIC
+alias List.SET.PUBLIC
+alias List.INSERT.PUBLIC
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Exception Declarations ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+alias List.EXCEPTION.RangeErr {
+ var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
+  return Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
+}
+;;;;;;;;;;;;;;
+; List Alias ;
+;;;;;;;;;;;;;;
+alias List {
+  var %Class List
+  var %prop $mprop($prop)
+  if !%prop {
+    if ($IsPrivate(%Class,INIT)) {
+
+      var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+      maketok MAKETOK V %Class
+      maketok MAKETOK V INIT
+      var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+      var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+      var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
+      maketok MAKETOK V $*
+      var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+      var %object $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+      - $inheritsFrom(%object,%Class)
+      if ($hget(MAKETOK)) hfree MAKETOK
+      return %object
+    }
+    if ($hget(MAKETOK)) hfree MAKETOK
+  }
+  else if $IsPublic(%class,$fprop(%prop)) {
+    var %object $1
+
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V %Class
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  else {
+    if ($hget(MAKETOK)) hfree MAKETOK
+    if $isinstance($1) {
+      return $catch($1,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop($prop))) is not a public member of class $qt(%class))
+    }
+    else {
+      return $catch(%class,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop($prop))) is not a public member of class $qt(%Class)).class  
+    }
+  }
+}
+
+;;;;;;;;;;;;;;;;
+; List Methods ;
+;;;;;;;;;;;;;;;;
+alias List.INIT {
+  var %instance $iif($1,$1,$class)
+  ;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Do Initializing here ;
+  ;;;;;;;;;;;;;;;;;;;;;;;;
+  return %instance
+}
+alias List.COUNT {
+  var %params $1
+  var %object $2
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+  return $class(%object,COUNT).GET
+}
+alias List.UNSET {
+  var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+  maketok MAKETOK V List
+  maketok MAKETOK V $+(REMOVE,$iif($prop,.),$prop)
+  maketok MAKETOK V %object
+  maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+  var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+  var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+  ;maketok MAKETOK V %object
+  var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+  var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
+  maketok MAKETOK V $*
+  var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+  return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+}
+alias List.REMOVE {
+  var %params $1
+  var %object $2
+  var %range $3
+  if %range !isnum 1- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92), $qt(%range) is not a valid list index for object $qt(%object)) }
+  - $Class(%object, COUNT, $calc($Class(%object,COUNT).GET - 1)).SET
+
+  bunset &items
+  - $Class(%object,ITEMS,&items).GET:BVAR
+
+  var %x $calc(1 + ((%range - 1) * 16)),%y %x + 16,%z $bvar(&items,%x,16).text
+  if %y > $bvar(&items,0) { dec %y }
+  var %var $bvar(&items,%x,16).text
+
+  bcopy -c &items %x &items %y -1
+  ;- $Class(%var).FREE
+  - $Class(%object,ITEMS,&items).SET:BVAR
+
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 4
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+}
+alias List.INSERT {
+  var %params $1
+  var %object $2
+  var %range $4
+  var %variable $$3
+  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 1- $+ $class(%object,COUNT).GET $+ $chr(41)) }
+  - $Class(%object, COUNT, $calc($Class(%object,COUNT).GET + 1)).SET
+  - $Class(%object, TOTAL, $calc($Class(%object,TOTAL).GET + 1)).SET
+  var %value $base($Class(%object,TOTAL).GET,10,10,16)
+
+  bunset &items
+  - $Class(%object,ITEMS,&items).GET:BVAR
+
+  var %x $calc(1 + ((%range - 1) * 16)),%y $calc(%x + 16)
+  bcopy &items %y &items %x -1
+  bset -at &items %x %value
+  - $Class($1,%value,%variable).setv
+  - $Class($1,ITEMS,&items).setb
+
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 5
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+  return %variable
+}
+alias List.ADD {
+  var %params $1
+  var %object $2
+  var %value $3
+
+  - $Class(%object,COUNT,$calc($Class(%object,COUNT).GET + 1)).SET
+  - $Class(%object,TOTAL,$calc($Class(%object,TOTAL).GET + 1)).SET
+  var %x $base($Class(%object,TOTAL).GET,10,10,16)
+
+  bunset &items
+
+  var %bvarcount $Class(%object,ITEMS,&items).GET:BVAR
+  - BVAR COUNT: %bvarCount X: %x
+  - BVAR CONTENTS: $bvar(&items,1,%bvarcount).text
+  bset -at &items $calc(1 + (($class(%object,COUNT).GET - 1) * 16)) %x
+  - $Class(%object,ITEMS,&items).SET:BVAR
+  - $iif($bvar(%value,0),$Class(%object,%x,%value).SET:BVAR,$Class(%object,%x,%value).SET)
+
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 4
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+  return $Class(%object,Count).GET
+}
+alias List.GET {
+  var %params $1
+  var %object $2
+  var %range $3
+
+  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 1- $+ $class(%range,COUNT).GET $+ $chr(41)) }
+  $iif(%range == 0,return $Class(%object,COUNT).GET)
+
+  bunset &items
+  - $Class(%object,ITEMS,&items).GET:BVAR
+
+  var %var2 $bvar(&items,$calc(1 + ((%range - 1) * 16)),16).text
+
+  var %return $Class(%object,%var2).GET
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    $iif($cprop(%params,STACK),maketok MAKETOK V %return)
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 4
+    maketok MAKETOK V $*
+    $iif(!$cprop(%params,STACK),maketok MAKETOK V %return)
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+    
+    echo -a PROP: $prop RETURN: %return
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+  return $Class(%object,%var2).GET
+}
+alias List.SET {
+  var %params $1
+  var %obect $2
+  var %range $3
+  var %value $4
+  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 1- $+ $class(%object,COUNT).GET $+ $chr(41)) }
+
+  bunset &items
+  - $Class(%object,ITEMS,&items).GET:BVAR
+
+  var %z $bvar(&items,$calc(1 + ((%range - 1) * 16)),16).text
+  var %x $Class(%object,%z).GET
+  if $IsInstance(%x) { - $Object(%x).FREE } 
+  - $Class(%object,%z,%value).SET
+
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 5
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+
+  if ($hget(MAKETOK)) hfree MAKETOK
+}
+alias List.IMPORT {
+  var %params $1
+  var %object $2
+  if ($IsInstanceOf(%object,List)) {
+    var %x $List(%object).COUNT
+    while %x {
+      - $Class($list(%object,%x).GET).IMPORT
+      - Loaded object $qt($List($1,%x).get) of type $qt($IsInstance($List($1,%x).get))
+    }
+    dec %x
+  }
+  if $exists($+($mircdir,MSL++,\,%object,.items)) {
+
+    bunset &data
+    bread $+($mircdir,MSL++,\,%object,.items) 1 $file($+($mircdir,MSL++,\,%object,.items)).size &data
+
+    - $Class(%object,ITEMS,&data).SET:BVAR
+  }
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+}
+
+alias List.EXPORT {
+  var %params $1
+  var %object $2
+  var %x $List(%object).COUNT
+  while %x {
+    var %y $List(%object,%x).GET
+    if $IsInstance(%y) {
+      - $class(%y).EXPORT
+      - Saved object $qt($List(%object,%x).get)
+    }
+    dec %x
+  }
+  bunset &data
+  - $Class(%object,ITEMS,&data).GET:BVAR
+  if $exists($+($mircdir,MSL++,\,%object,.items)) { 
+    .remove $+($mircdir,MSL++,\,%object,.items)
+  }
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+  bwrite $+($mircdir,MSL++,\,%object,.items) 1 -1 &data
+}
+alias List.FREE {
+  ;;;;;;;;;;;;;;;;;;;;;;
+  ; Do Destroying here ;
+  ;;;;;;;;;;;;;;;;;;;;;;
+  var %params $1
+  var %object $2
+  - $Class(%object,ITEMS).UNSET
+  - $Class(%object,TOTAL).UNSET
+  - $Class(%object,COUNT).UNSET
+  if $cprop(%params,ALL) {
+    while $list(%object,1) {
+      var %itemNumber $v1
+      var %itemName $hget(%object,%y)
+      if $IsInstance(%itemname) {
+        - $Object(%x,1).FREE
+        - Removed object: $qt(%x) from list $qt(%object)
+      }
+      - $Class(%object,%y).UNSET
+    }
+  }
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V List
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+  return $Class(%object).FREE
+}
+;;;;;;;;;;;;
+; End List ;
+;;;;;;;;;;;;
