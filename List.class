@@ -20,6 +20,12 @@ alias List.GET.PUBLIC
 alias List.COUNT.PUBLIC
 alias List.SET.PUBLIC
 alias List.INSERT.PUBLIC
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+; Private Declarations ;
+;;;;;;;;;;;;;;;;;;;;;;;;
+alias List.INIT.PRIVATE
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Exception Declarations ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -280,7 +286,7 @@ alias List.GET {
     var %return $Class(%object,%var2).GET
     var %start 4
   }
-  
+
   if $prop {
     var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
     maketok MAKETOK V List
@@ -294,7 +300,7 @@ alias List.GET {
     var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
 
     var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + %start
-    
+
     maketok MAKETOK V $*
     $iif(!$cprop(%params,STACK),maketok MAKETOK V %return)
     var %cend $iif($hget(MAKETOK,COUNT),$v1,0)

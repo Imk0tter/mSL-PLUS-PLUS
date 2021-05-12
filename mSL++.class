@@ -97,6 +97,12 @@ alias Class.EXPORT.Public
 alias Class.IMPORT.Public
 alias Class.CLONE.Public
 
+;;;;;;;;;;;;;;;;;;;;;;;;
+; Private Declarations ;
+;;;;;;;;;;;;;;;;;;;;;;;;
+alias Class.INIT.PRIVATE
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Exception Declarations ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -579,7 +585,7 @@ alias IsPublic return $isalias($+($1.,$2.,PUBLIC))
 ; Usage: $IsPrivate(<Class>,<Member>)                ;
 ; Example: if ($IsInstanceOf(%Player,Player)) ..     ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-alias IsPrivate return $isalias($+($1.,$2))
+alias IsPrivate return $iif($IsPublic($1,$2) || $isalias($+($1.,$2.,PRIVATE)),$true,$false)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Description: Returns whether or not an instance    ;
@@ -590,6 +596,14 @@ alias IsPrivate return $isalias($+($1.,$2))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 alias IsClass return $isalias($1)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Description: Returns whether or not a class member ;
+; is an exception.                                   ;
+;                                                    ;
+; Usage: $IsException(<Class>,<Member>)              ;
+; Example: if ($IsExceptiion(%class,Null)) ..        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+alias IsException return $iif($isalias($+($1,.EXCEPTION.,$$2)),$true,$false)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Description: Called from the class constructor to  ;
@@ -638,8 +652,7 @@ alias CATCH {
     var %inheritance $hget(MSL++,$+(%instanceOrClass,_,INIT))
     while $token(%inheritance,%x,32) {
       var %currentClass $v1
-      var %currentClassException $+(%currentClass,.EXCEPTION.,%error)
-      if $isalias(%currentClassException) {
+      if $IsException(%currentClass,%error) {
         var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
         maketok MAKETOK V %currentClass $+ .EXCEPTION
         maketok MAKETOK V $+(%error,.,$prop)
@@ -659,7 +672,7 @@ alias CATCH {
     }
   }
   else if %isClass && $isClass(%instanceOrClass) {
-    if $isalias($+(%instanceOrClass,.EXCEPTION.,%error)) {
+    if $IsException(%instanceOrClass) {
       var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
       maketok MAKETOK V %instanceOrClass $+ .EXCEPTION
       maketok MAKETOK V $+(%error,.,$mprop($prop,1))
@@ -783,7 +796,7 @@ alias meval {
   - CLASS: %class PROP: %prop OBJECT: %object FPROP: $fprop($mprop(%prop)) ISOBJECTCALL: %isObjectCall
 
   if !%isObjectCall {
-    if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && ($fprop($mprop(%prop)) == INIT || $token(%class,2,46) == EXCEPTION))  {
+    if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && $fprop($mprop(%prop)) == INIT) || $IsException(%class, $fprop($mprop(%prop))) {
       var %regex $+($,%class,.,$fprop($mprop(%prop)),$chr(40),$iif($fprop($mprop(%prop),2-),$v1 $+ $chr(44),$null $+ $chr(44)), $left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif($mprop(%prop,1),$+(.,$v1)))
       - REGEX1 %regex MAKETOK COUNT: $hget(MAKETOK,COUNT)
       return [ [ %regex ] ]
