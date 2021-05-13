@@ -97,9 +97,7 @@ alias -l List.INIT {
   var %object $2
   
   var %instance $iif(%object,$v1,$class)
- 
- echo -a INSTANCE: %instance
- 
+  
   - $class(%instance,COUNT,0).set
   - $class(%instance,TOTAL,0).set
   ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -612,7 +610,7 @@ alias -l meval {
   }
 
   tokenize 255 %localVariables
-echo -a Local Variable Count: $0 Local Variables: $1-
+  
   var %class [ [ $1 ] ]
   var %prop [ [ $2 ] ]
   var %object [ [ $3 ] ]

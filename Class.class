@@ -145,7 +145,6 @@ alias -l Class.SET {
   var %object $2
   var %variable $3
   var %value $4
-  echo -a PARAMS: %params OBJECT: %object VARIABLE: %variable VALUE: %value
   if (!$IsInstanceOf(%object, Class)) {
     UNMAKETOK
     if ($isInstance(%object)) {
@@ -155,8 +154,8 @@ alias -l Class.SET {
       return $catch(Class, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(Class)).class
     }
   }
-  if %variable {
-    if %value {
+  if %variable != $null {
+    if %value != $null {
       if $cprop(%params,BVAR) || $cprop(%params, B) {
         hadd -mb %object %variable %value
 
