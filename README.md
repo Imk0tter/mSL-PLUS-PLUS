@@ -115,7 +115,7 @@ alias -l List.FunctionName {
     return $catch(ClassName,ExceptionName,$scriptline,$token($token($script,-1,92),1,46),there is no object specified for function $qt(FunctionName)).class
   }
   else {
-    retrun $catch(%object, ParamErr, $scriptline, $token($token($script,-1,92),1,46), the function $qt(FunctionName) of class $token($token($script,-2,92),1,46) has not yet been implemented!
+    retrun $catch(%object, Null, $scriptline, $token($token($script,-1,92),1,46), the function $qt(FunctionName) of class $token($token($script,-2,92),1,46) has not yet been implemented!
   }
   
   ;;;;;;;;;;;;;;;;;;;;;
