@@ -19,7 +19,8 @@ alias ClassName.FunctionName.Public
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 alias ClassName.EXCEPTION.ExceptionName {
   var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
-  return Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
+  + Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
+  return $null
 }
 ;;;;;;;;;;;;;;;;;;;;;;;
 ; Main Class Function ;
