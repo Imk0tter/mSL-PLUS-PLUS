@@ -356,3 +356,16 @@ else {
 }
 ````
 
+# $object
+
+The object function calls the first found instance of the specified function in the class heirarchy.
+
+````
+var %object $Class
++ $Object(%object,variable,value).set
++ $Object(%object,variable).get
+
++ $Class(%object,variable,value).get
++ $Class(%object, variable).get
+````
+
