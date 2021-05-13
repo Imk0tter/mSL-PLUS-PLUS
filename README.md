@@ -1,9 +1,29 @@
 ## mSL++
 Imk0tter's object oriented mSL implementation: mSL++
 
+# Class Header
 
-Below to create a new class, simply modify the first two instaces of 'ClassName' with your classes name.
+The class header is to be modified for every class; simply implement your own public functions and change the 'ClassName' to the name of your class.
+
 ````
+;;;;;;;;;;;;;;;;
+; Class Header ;
+;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;
+; Public Declarations ;
+;;;;;;;;;;;;;;;;;;;;;;;
+alias ClassName.FunctionName.Public
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Exception Declarations ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+alias ClassName.EXCEPTION.ExceptionName {
+  var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
+  return Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
+}
+;;;;;;;;;;;;;;;;;;;;;;;
+; Main Class Function ;
+;;;;;;;;;;;;;;;;;;;;;;;
 alias ClassName {
   var %Class ClassName
   var %prop $mprop($prop)
@@ -57,18 +77,18 @@ alias ClassName {
     }
   }
 }
-
-
-alias ClassName.INIT {
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; Below you call the constructor for the subclass of the current class. ;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  var %instance $Class                                        
-
+alias -l ClassName.INIT {
+  var %instance $iif($1,$1,$class)
+  - $class(%instance,COUNT,0).set
+  - $class(%instance,TOTAL,0).set
+  ;;;;;;;;;;;;;;;;;;;;;;;;
   ; Do Initializing here ;
   ;;;;;;;;;;;;;;;;;;;;;;;;
   return %instance
 }
+;;;;;;;;;;;;;;;;;;;;
+; END CLASS HEADER ;
+;;;;;;;;;;;;;;;;;;;;
 ````
 
 
@@ -334,12 +354,9 @@ alias maketok {
 
 
 
-# Class base
-
+# Class Body
 
 Below is the main class of mSL++, which can be used to get and set variables.
-
-
 
 
 ````
