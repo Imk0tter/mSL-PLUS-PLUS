@@ -248,7 +248,7 @@ alias -l meval {
 ;  an instance of class Player)                      ;
 ; }                                                  ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-alias CATCH {
+alias -l CATCH {
   var %error $2,%message $5,%instanceOrClass $1,%scriptLine $3, %scriptDir $4, %isClass $iif($mprop($prop) == class, $true,$false)
 
   if $isInstance(%instanceOrClass) && !%isClass {
@@ -269,7 +269,7 @@ alias CATCH {
         var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
         maketok MAKETOK V $*
         var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
-        return $catcheval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+        return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
       }
       inc %x
     }
@@ -288,7 +288,7 @@ alias CATCH {
       maketok MAKETOK V $*
       var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
 
-      return $catcheval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+      return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
     }
   }
   if ($hget(MAKETOK)) hfree MAKETOK
