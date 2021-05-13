@@ -33,19 +33,19 @@ alias Class.CLONE.Public
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 alias Class.EXCEPTION.Null {
   var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   + Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
   return $null
 }
 alias Class.EXCEPTION.NoOperation {
   var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   + Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
   return $null
 }
 alias Class.EXCEPTION.MemberErr {
   var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   + Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
   return $null
 }
@@ -57,7 +57,7 @@ alias Class.EXCEPTION.ParamErr {
 }
 alias Class.EXCEPTION.RangeErr {
   var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   + Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
   return $null
 }
@@ -65,53 +65,52 @@ alias Class.EXCEPTION.RangeErr {
 ; Main Class Function ;
 ;;;;;;;;;;;;;;;;;;;;;;;
 alias Class {
-  echo -a $token($token($script,-1,92),1,46)
   var %class Class
   var %prop $mprop($prop)
   if !$mprop($prop) {
     if ($IsPrivate(%class,INIT)) {
 
-      var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-      maketok MAKETOK V Class
-      maketok MAKETOK V INIT
-      var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %astart $MAKETOKCOUNT
+      MAKETOK Class
+      MAKETOK INIT
+      var %aend $MAKETOKCOUNT
 
-      var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-      var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %bstart $MAKETOKCOUNT
+      var %bend $MAKETOKCOUNT
 
-      var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
-      maketok MAKETOK V $*
-      var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+      var %cstart $MAKETOKCOUNT + 1
+      MAKETOK $*
+      var %cend $MAKETOKCOUNT
 
-      var %object $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+      var %object $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
       - $inheritsFrom(%object,%class)
-      if ($hget(MAKETOK)) hfree MAKETOK
+      UNMAKETOK
       return %object
     }
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
   }
   else if $IsPublic(%class,$fprop($mprop($prop))) {
     var %object $1
 
-    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V Class
-    maketok MAKETOK V $prop
-    maketok MAKETOK V %object
-    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %astart $MAKETOKCOUNT
+    MAKETOK Class
+    MAKETOK $prop
+    MAKETOK %object
+    var %aend $MAKETOKCOUNT
 
-    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-    ;;maketok MAKETOK V $fprop($mprop($prop), 2-)
-    maketok MAKETOK V %object
-    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bstart $MAKETOKCOUNT
+    ;;MAKETOK $fprop($mprop($prop), 2-)
+    MAKETOK %object
+    var %bend $MAKETOKCOUNT
 
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 2
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+    var %cstart $MAKETOKCOUNT + 2
+    MAKETOK $*
+    var %cend $MAKETOKCOUNT
 
-    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
   }
   else {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     if $isinstance($1) {
       return $catch($1,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop($prop))) is not a public member of class $qt(%Class))
     }
@@ -146,8 +145,9 @@ alias -l Class.SET {
   var %object $2
   var %variable $3
   var %value $4
+  echo -a PARAMS: %params OBJECT: %object VARIABLE: %variable VALUE: %value
   if (!$IsInstanceOf(%object, Class)) {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     if ($isInstance(%object)) {
       return $catch(%object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(Class))
     }
@@ -161,57 +161,57 @@ alias -l Class.SET {
         hadd -mb %object %variable %value
 
         if $prop {
-          var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-          maketok MAKETOK V Class
-          maketok MAKETOK V $prop
-          maketok MAKETOK V %object
-          maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-          var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+          var %astart $MAKETOKCOUNT
+          MAKETOK Class
+          MAKETOK $prop
+          MAKETOK %object
+          MAKETOK $cprop(%params,IS_OBJECT_CALL)
+          var %aend $MAKETOKCOUNT
 
-          var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-          ;maketok MAKETOK V %object
-          var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+          var %bstart $MAKETOKCOUNT
+          ;MAKETOK %object
+          var %bend $MAKETOKCOUNT
 
-          var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 5
-          maketok MAKETOK V $*
-          var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+          var %cstart $MAKETOKCOUNT + 5
+          MAKETOK $*
+          var %cend $MAKETOKCOUNT
 
-          return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+          return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
         }
       }
       else {
         hadd -m %object %variable %value
         if $prop {
-          var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-          maketok MAKETOK V Class
-          maketok MAKETOK V $prop
-          maketok MAKETOK V %object
-          maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-          var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+          var %astart $MAKETOKCOUNT
+          MAKETOK Class
+          MAKETOK $prop
+          MAKETOK %object
+          MAKETOK $cprop(%params,IS_OBJECT_CALL)
+          var %aend $MAKETOKCOUNT
 
-          var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-          ;maketok MAKETOK V %object
-          var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+          var %bstart $MAKETOKCOUNT
+          ;MAKETOK %object
+          var %bend $MAKETOKCOUNT
 
 
-          var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 5
-          maketok MAKETOK V $*
-          var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+          var %cstart $MAKETOKCOUNT + 5
+          MAKETOK $*
+          var %cend $MAKETOKCOUNT
 
-          return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+          return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
         }
       }
     }
     else {
-      if ($hget(MAKETOK)) hfree MAKETOK
+      UNMAKETOK
       return $catch(%object,ParamErr,$scriptline, $token($token($script,-1,92),1,46), there is no value specified for this set call!)
     }
   }
   else {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     return $catch(%object,ParamErr,$scriptline, $token($token($script,-1,92),1,46), there is no variable specified for this set call!)
   }
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
 }
 
 alias -l Class.GET {
@@ -222,7 +222,7 @@ alias -l Class.GET {
   var %hget
 
   if (!$IsInstanceOf(%object, Class)) {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     if ($isInstance(%object)) {
       return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(Class))
     }
@@ -237,7 +237,7 @@ alias -l Class.GET {
         var %hget $hget(%object,%variableName, %bvar).item
       }
       else {
-        if ($hget(MAKETOK)) hfree MAKETOK
+        UNMAKETOK
         return $catch(%object,RangeErr,$scriptline, $token($token($script,-1,92),1,46),$qt(%variableName) is not a valid index for object $qt(%object) $+ . Valid Ranges: 1- $+ $hget(%object, 0).item)
       }
     }
@@ -245,27 +245,27 @@ alias -l Class.GET {
       var %hget $hget(%object,%variableName,%bvar)
     }
     if $prop {
-      var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-      maketok MAKETOK V Class
-      maketok MAKETOK V $prop
-      maketok MAKETOK V %object
-      maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-      var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %astart $MAKETOKCOUNT
+      MAKETOK Class
+      MAKETOK $prop
+      MAKETOK %object
+      MAKETOK $cprop(%params,IS_OBJECT_CALL)
+      var %aend $MAKETOKCOUNT
 
-      var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-      ;maketok MAKETOK V %object
-      $iif($cprop(%params,stack),maketok MAKETOK V %bvar)
-      var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %bstart $MAKETOKCOUNT
+      ;MAKETOK %object
+      $iif($cprop(%params,stack),MAKETOK %bvar)
+      var %bend $MAKETOKCOUNT
 
-      var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 5
-      maketok MAKETOK V $*
-      $iif(!$cprop(%params,stack), maketok MAKETOK V %bvar)
-      var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+      var %cstart $MAKETOKCOUNT + 5
+      MAKETOK $*
+      $iif(!$cprop(%params,stack), MAKETOK %bvar)
+      var %cend $MAKETOKCOUNT
 
-      return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
 
     }
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     return %hget
   }
   else {
@@ -285,30 +285,30 @@ alias -l Class.GET {
       else {
         var %hget $hget(%object,%variableName)
         if $prop {
-          var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-          maketok MAKETOK V Class
-          maketok MAKETOK V $prop
-          maketok MAKETOK V %object
-          maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-          var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+          var %astart $MAKETOKCOUNT
+          MAKETOK Class
+          MAKETOK $prop
+          MAKETOK %object
+          MAKETOK $cprop(%params,IS_OBJECT_CALL)
+          var %aend $MAKETOKCOUNT
 
-          var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-          ;maketok MAKETOK V %object
-          $iif($cprop(%params,STACK),maketok MAKETOK V %hget)
-          var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+          var %bstart $MAKETOKCOUNT
+          ;MAKETOK %object
+          $iif($cprop(%params,STACK),MAKETOK %hget)
+          var %bend $MAKETOKCOUNT
 
 
-          var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 4
-          maketok MAKETOK V $*
-          $iif(!$cprop(%params,STACK), maketok MAKETOK V %hget)
-          var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+          var %cstart $MAKETOKCOUNT + 4
+          MAKETOK $*
+          $iif(!$cprop(%params,STACK), MAKETOK %hget)
+          var %cend $MAKETOKCOUNT
 
-          return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+          return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
         }
       }
     }
   }
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   return %hget
 }
 
@@ -317,7 +317,7 @@ alias -l Class.UNSET {
   var %object $2
 
   if (!$IsInstanceOf(%object, Class)) {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     if ($isInstance(%object)) {
       return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(Class))
     }
@@ -330,26 +330,26 @@ alias -l Class.UNSET {
   hdel %object $$3
 
   if $prop {
-    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V Class
-    maketok MAKETOK V $prop
-    maketok MAKETOK V %object
-    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %astart $MAKETOKCOUNT
+    MAKETOK Class
+    MAKETOK $prop
+    MAKETOK %object
+    MAKETOK $cprop(%params,IS_OBJECT_CALL)
+    var %aend $MAKETOKCOUNT
 
 
-    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-    ;maketok MAKETOK V %object
-    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bstart $MAKETOKCOUNT
+    ;MAKETOK %object
+    var %bend $MAKETOKCOUNT
 
 
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 4
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+    var %cstart $MAKETOKCOUNT + 4
+    MAKETOK $*
+    var %cend $MAKETOKCOUNT
 
-    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
   }
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
 }
 
 
@@ -371,7 +371,7 @@ alias -l Class.FREE {
   var %prop $mprop($prop)
 
   if (!$IsInstanceOf(%object, Class)) {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     if ($isInstance(%object)) {
       return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(Class))
     }
@@ -386,23 +386,23 @@ alias -l Class.FREE {
       while %y {
         var %currentObject $hget(%object, $hget(%object,%y).ITEM)
 
-        var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-        maketok MAKETOK V Class
-        maketok MAKETOK V FREE:ALL
-        maketok MAKETOK V %object
-        maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-        var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+        var %astart $MAKETOKCOUNT
+        MAKETOK Class
+        MAKETOK FREE:ALL
+        MAKETOK %object
+        MAKETOK $cprop(%params,IS_OBJECT_CALL)
+        var %aend $MAKETOKCOUNT
 
-        var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-        maketok MAKETOK V %currentObject
-        var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+        var %bstart $MAKETOKCOUNT
+        MAKETOK %currentObject
+        var %bend $MAKETOKCOUNT
 
-        var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
-        maketok MAKETOK V $*
-        var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+        var %cstart $MAKETOKCOUNT + 3
+        MAKETOK $*
+        var %cend $MAKETOKCOUNT
 
         if $CLASS_FREE_STACK(%currentObject) {
-          - $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+          - $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
         }
         dec %y
       }
@@ -411,24 +411,24 @@ alias -l Class.FREE {
   }
   if ($hget(MSL++,%object $+ _INIT)) hdel MSL++ %object $+ _INIT
   if ($hget(%object)) hfree %object 
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   if $prop {
-    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V Class
-    maketok MAKETOK V $prop
-    maketok MAKETOK V %object
-    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %astart $MAKETOKCOUNT
+    MAKETOK Class
+    MAKETOK $prop
+    MAKETOK %object
+    MAKETOK $cprop(%params,IS_OBJECT_CALL)
+    var %aend $MAKETOKCOUNT
 
-    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V %object
-    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bstart $MAKETOKCOUNT
+    MAKETOK %object
+    var %bend $MAKETOKCOUNT
 
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+    var %cstart $MAKETOKCOUNT + 3
+    MAKETOK $*
+    var %cend $MAKETOKCOUNT
 
-    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
   } 
 }
 
@@ -443,44 +443,44 @@ alias -l Class.IMPORT {
   hload -b %objectName $+(%objectDir,\,%objectName,.obj)
   if $hget(%objectName) { 
     if $prop {
-      var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-      maketok MAKETOK V Class
-      maketok MAKETOK V $prop
-      maketok MAKETOK V %objectName
-      maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-      var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %astart $MAKETOKCOUNT
+      MAKETOK Class
+      MAKETOK $prop
+      MAKETOK %objectName
+      MAKETOK $cprop(%params,IS_OBJECT_CALL)
+      var %aend $MAKETOKCOUNT
 
-      var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-      maketok MAKETOK V %objectName
-      var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %bstart $MAKETOKCOUNT
+      MAKETOK %objectName
+      var %bend $MAKETOKCOUNT
 
-      var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
-      maketok MAKETOK V $*
-      var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+      var %cstart $MAKETOKCOUNT + 3
+      MAKETOK $*
+      var %cend $MAKETOKCOUNT
 
-      return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
 
     }
   }
   if $prop {
-    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V Class
-    maketok MAKETOK V $prop
-    maketok MAKETOK V %objectName
-    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %astart $MAKETOKCOUNT
+    MAKETOK Class
+    MAKETOK $prop
+    MAKETOK %objectName
+    MAKETOK $cprop(%params,IS_OBJECT_CALL)
+    var %aend $MAKETOKCOUNT
 
-    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V %objectName
-    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bstart $MAKETOKCOUNT
+    MAKETOK %objectName
+    var %bend $MAKETOKCOUNT
 
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+    var %cstart $MAKETOKCOUNT + 3
+    MAKETOK $*
+    var %cend $MAKETOKCOUNT
 
-    return  $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+    return  $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
   }
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
 }
 
 alias -l Class.EXPORT {
@@ -489,7 +489,7 @@ alias -l Class.EXPORT {
   var %objectName $2
 
   if (!$IsInstanceOf(%objectName, Class)) {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     if ($isInstance(%objectName)) {
       return $catch(%objectName, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%objectName) is not an instance of class $qt(Class))
     }
@@ -501,25 +501,25 @@ alias -l Class.EXPORT {
   if !$exists(%objectDir) { mkdir %objectDir }
   hsave -b %objectName $+(%objectDir,\,%objectName $+ .obj)
   if $prop {
-    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V Class
-    maketok MAKETOK V $prop
-    maketok MAKETOK V %objectName
-    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %astart $MAKETOKCOUNT
+    MAKETOK Class
+    MAKETOK $prop
+    MAKETOK %objectName
+    MAKETOK $cprop(%params,IS_OBJECT_CALL)
+    var %aend $MAKETOKCOUNT
 
 
-    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V %objectName
-    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bstart $MAKETOKCOUNT
+    MAKETOK %objectName
+    var %bend $MAKETOKCOUNT
 
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+    var %cstart $MAKETOKCOUNT + 3
+    MAKETOK $*
+    var %cend $MAKETOKCOUNT
 
-    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
   }
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
 }
 
 alias -l Class.CLONE {
@@ -528,7 +528,7 @@ alias -l Class.CLONE {
   var %objectName $2
 
   if (!$IsInstanceOf(%objectName, Class)) {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     if ($isInstance(%objectName)) {
       return $catch(%objectName, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%objectName) is not an instance of class $qt(Class))
     }
@@ -545,29 +545,29 @@ alias -l Class.CLONE {
   hload -mb %object $+(%objectDir,\,%objectName,.cpy)
 
   .remove $+(%objectDir,\,%objectName,.cpy)
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   return %object
 
   if $prop {
-    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V Class
-    maketok MAKETOK V $prop
-    maketok MAKETOK V %objectName
-    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %astart $MAKETOKCOUNT
+    MAKETOK Class
+    MAKETOK $prop
+    MAKETOK %objectName
+    MAKETOK $cprop(%params,IS_OBJECT_CALL)
+    var %aend $MAKETOKCOUNT
 
-    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V %objectName
-    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+    var %bstart $MAKETOKCOUNT
+    MAKETOK %objectName
+    var %bend $MAKETOKCOUNT
 
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+    var %cstart $MAKETOKCOUNT + 3
+    MAKETOK $*
+    var %cend $MAKETOKCOUNT
 
-    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
   }
 
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
 }
 ;;;;;;;;;;;;;;;;;;
 ; End Class body ;
@@ -639,28 +639,29 @@ alias OBJECT {
     while $token(%inheritance,%iterator,32) {
       var %currentClass $v1
       if $IsPublic(%currentClass,$fprop($mprop($prop))) {
-        var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-        maketok MAKETOK V %currentClass
-        maketok MAKETOK V $+($mprop($prop),$chr(58),IS_OBJECT_CALL,$iif($mprop($prop,1),. $+ $v1))
-        maketok MAKETOK V %object
-        var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+        var %astart $MAKETOKCOUNT
+        MAKETOK %currentClass
+        MAKETOK $+($mprop($prop),$chr(58),IS_OBJECT_CALL,$iif($mprop($prop,1),. $+ $v1))
+        MAKETOK %object
+        var %aend $MAKETOKCOUNT
 
-        var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-        var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+        var %bstart $MAKETOKCOUNT
+        var %bend $MAKETOKCOUNT
 
-        var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
-        maketok MAKETOK V $*
-        var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+        var %cstart $MAKETOKCOUNT + 1
+        MAKETOK $*
+        var %cend $MAKETOKCOUNT
         return $objecteval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
       }
       inc %iterator
     }
+    return $catch(Class,NoOperation,$scriptline, $token($token($script,-1,92),1,46), there is no function $qt($mprop($prop)) in object $qt(%object) $+ 's class heirarchy)
   }
   else {
-    if ($hget(MAKETOK)) hfree MAKETOK
+    UNMAKETOK
     return $catch(%object,NoOperation,$scriptline, $token($token($script,-1,92),1,46),there is no operation specified for this object call!)
   }
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
   return $catch(%object,MemberErr,$scriptline, $token($token($script,-1,92),1,46),$qt($mprop($prop)) is not a public member of class $qt(Class))
 }
 ;;;;;;;;;;;;;;
@@ -680,8 +681,22 @@ alias fprop {
 }
 
 alias maketok {
-  hinc -m $1 COUNT
-  hadd -m $+ $iif($2 == B,b) $1 $hget($1,COUNT) $3-
+  hinc -m MAKETOK COUNT
+  hadd MAKETOK $hget(MAKETOK,COUNT) $1-
+}
+alias maketokcount {
+  if $hget(MAKETOK,COUNT) {
+    return $v1
+  }
+  else {
+    return 0
+  }
+}
+alias unmaketok {
+  if ($hget(MAKETOK)) hfree MAKETOK
+}
+alias getmaketok {
+  return $hget(MAKETOK, $1)
 }
 
 alias catcheval {
@@ -708,15 +723,16 @@ alias catcheval {
   var %class [ [ $1 ] ]
   var %prop [ [ $2 ] ]
   var %object [ [ $3 ] ]
+  var %script [ [ $4 ] ]
 
   if $IsException(%class, $fprop($mprop(%prop))) {
-    var %regex $+($,%class,.EXCEPTION.,$fprop($mprop(%prop)),$chr(40),$fprop($mprop(%prop),2-),$chr(44),$left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif(!$IsInstance(%object),.CLASS))
+    var %regex $+($,%class,.EXCEPTION.,$fprop($mprop(%prop)),$chr(40),$+(%script,$iif($fprop($mprop(%prop),2-),: $+ $v1)),$chr(44),$left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif(!$IsInstance(%object),.CLASS))
     - %REGEX REGEX
     return [ [ %regex ] ]
   }
 }
 
-alias objecteval {
+alias objecteval2 {
   var %tokentable $1
 
   var %astart $2 + 1
@@ -748,7 +764,7 @@ alias objecteval {
       return [ [ %regex ] ]
     }
     else if $IsException(%class, $fprop($mprop(%prop))) {
-      var %regex $+($,%class,.EXCEPTION.,$fprop($mprop(%prop)),$chr(40),$fprop($mprop(%prop),2-),$chr(44),$left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif(!$IsInstance(%object),.CLASS))
+      var %regex $+($,%class,.EXCEPTION.,$$fprop($mprop(%prop)),$chr(40),$fprop($mprop(%prop),2-),$chr(44),$left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif(!$IsInstance(%object),.CLASS))
       + %REGEX REGEX
       return [ [ %regex ] ]
     }
@@ -771,6 +787,98 @@ alias objecteval {
   else {
     return $catch(%class, MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop(%prop))) is not a public member of %Class).class
   }
+}
+alias -l objecteval {
+  var %astart $1
+  var %aend $2
+  var %acount %aend - %astart
+
+  var %bstart $3
+  var %bend $4
+  var %bcount %bend - %bstart
+
+  var %cstart $5 - 1
+  var %cend $$6
+  var %ccount %cend - %cstart
+
+  var %localVariables
+
+  var %x 1
+  while %x < %acount {
+    var %y %x + %astart
+    var %localVariables %localVariables $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    inc %x
+  }
+
+  tokenize 255 %localVariables
+
+  var %class [ [ $1 ] ]
+  var %prop [ [ $2 ] ]
+  var %object [ [ $3 ] ]
+  var %isObjectCall [ [ $4 ] ]
+
+  var %header,%footer 
+
+  var %x 1
+  while %x <= %bcount {
+    var %y %x + %bstart
+    var %header %header $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    inc %x
+  }
+
+  var %x 1
+  while %x <= %ccount {
+    var %y %x + %cstart
+    var %footer %footer $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    inc %x
+  }
+
+  var %eval,%endeval
+
+  ;var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ [ $fprop($mprop(%prop),2-) ] $+ [ , ]
+  ;var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
+
+  ;;;;;;;;;;;;;;;;;
+  if !%isObjectCall {
+    if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && $fprop($mprop(%prop)) == INIT) {
+      var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ $fprop($mprop(%prop),2-) $+ [ , ]
+      var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
+    }
+    else if $IsException(%class, $fprop($mprop(%prop))) {
+      var %eval $ $+ %class $+ .EXCEPTION. $+ $fprop($mprop(%prop)) $+ [ ( ] $+ $fprop($mprop(%prop),2-) $+ [ , ]
+      var %endeval [ ) ] $+ . $+ $mprop(%prop,1)
+    }
+    else {
+      if ($IsInstance(%obejct))  {
+        UNMAKETOK
+        return $catch(%object, NoOperation, $scriptline, $token($token($script,-1,96),1,46), $qt($fprop($mprop(%prop))) is not a public member of class $qt(%class))
+      }
+      else {
+        UNMAKETOK
+        return $catch(Class, NoOperation, $scriptline, $token($token($script,-1,96),1,46), $qt($fprop($mprop(%prop))) is not a public member of class $qt(%class)).class
+      }
+    }
+  }
+  else {
+    var %eval $ $+ OBJECT $+ [ ( ]
+    var %endeval [ ) ] $+ . $+ $prop
+  }
+  ;;;;;;;;;;;;;;;;;
+
+  tokenize 255 %header $+ %footer
+
+  var %x 1
+  while %x <= $0 {
+    if %x == $0 {
+      var %eval %eval $+ [ $ $+ [ %x ] ]
+    }
+    else {
+      var %eval %eval $+ [ $ $+ [ %x ] ] $+ [ , ]
+    }
+    inc %x
+  }  
+  UNMAKETOK
+  return [ [ %eval ] $+ [ %endeval ] ]
 }
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ; END HELPER FUNCTIONS ;
@@ -799,77 +907,124 @@ alias -l IsPrivate return $iif($IsClass($1) && $isalias($+($1.,$2)),$true,$false
 ; Usage: $IsException(<Class>,<Member>)              ;
 ; Example: if ($IsExceptiion(%class,Null)) ..        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-alias IsException return $iif($isalias($+($1,.EXCEPTION.,$$2)),$true,$false)
+alias -l IsException return $iif($isalias($+($1,.EXCEPTION.,$$2)),$true,$false)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Code for passing dynamic variables to the $meval function ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;      var %astart $iif($hget(MAKETOK, COUNT),$v1,0)         ; For passing variables to the $meval function (or your own function)                      ;
-;      maketok MAKETOK V ClassName                           ;                                                                                          ;
-;      maketok MAKETOK V $prop                               ;                                                                                          ;
-;      var %aend $iif($hget(MAKETOK, COUNT),$v1,0)           ;                                                                                          ;
+;      var %astart $MAKETOKCOUNT         ; For passing variables to the $meval function (or your own function)                      ;
+;      MAKETOK ClassName                           ;                                                                                          ;
+;      MAKETOK $prop                               ;                                                                                          ;
+;      var %aend $MAKETOKCOUNT           ;                                                                                          ;
 ;                                                            ;                                                                                          ;
-;      var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)         ; For passing variables before the $N- tokens are passed (any number of variables allowed  ;
-;      maketok MAKETOK V SomeValue                           ;    these variables will be before the $N- tokens.                                        ;
-;      maketok MAKETOK V SomeValue2                          ;                                                                                          ;
-;      var %bend $iif($hget(MAKETOK, COUNT),$v1,0)           ;                                                                                          ;
+;      var %bstart $MAKETOKCOUNT         ; For passing variables before the $N- tokens are passed (any number of variables allowed  ;
+;      MAKETOK SomeValue                           ;    these variables will be before the $N- tokens.                                        ;
+;      MAKETOK SomeValue2                          ;                                                                                          ;
+;      var %bend $MAKETOKCOUNT           ;                                                                                          ;
 ;                                                            ;                                                                                          ;
-;      var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1      ; Starting token number (if trying to pass $2- to a function you put + 2 instead of  +1    ; 
-;      maketok MAKETOK V $*                                  ;    (which is for tokens $1-)                                                             ;
-;      var %cend $iif($hget(MAKETOK,COUNT),$v1,0)            ;                                                                                          ;
+;      var %cstart $MAKETOKCOUNT + 1      ; Starting token number (if trying to pass $2- to a function you put + 2 instead of  +1    ; 
+;      MAKETOK $*                                  ;    (which is for tokens $1-)                                                             ;
+;      var %cend $MAKETOKCOUNT            ;                                                                                          ;
 ;                                                           ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;             
-;      return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend) ;
+;      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend) ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 alias -l meval {
-  var %tokentable $1
+  var %astart $1
+  var %aend $2
+  var %acount %aend - %astart
 
-  var %astart $2 + 1
-  var %aend $3
-  var %acount $calc(%aend - %astart + 1)
+  var %bstart $3
+  var %bend $4
+  var %bcount %bend - %bstart
 
-  var %bstart $4 + 1
-  var %bend $5
-  var %bcount $calc(%bend - %bstart + 1)
+  var %cstart $5 - 1
+  var %cend $$6
+  var %ccount %cend - %cstart
 
-  var %cstart $6
-  var %cend $$7
-  var %ccount $calc(%cend - %cstart + 1)
+  var %localVariables
 
-  var %aregex $regsubex($str(.,%acount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %astart - 1),$chr(41),$chr(58)))
-  var %bregex $regsubex($str(.,%bcount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %bstart - 1),$chr(41),$chr(58)))
-  var %cregex $regsubex($str(.,%ccount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %cstart - 1),$chr(41),$chr(58)))
-
-  tokenize 58 %aregex
-
+  var %x 1
+  while %x <= %acount {
+    var %y %x + %astart
+    var %localVariables %localVariables $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    inc %x
+  }
+  
+  tokenize 255 %localVariables
+    
   var %class [ [ $1 ] ]
   var %prop [ [ $2 ] ]
   var %object [ [ $3 ] ]
   var %isObjectCall [ [ $4 ] ]
 
+  var %header,%footer 
+
+  var %x 1
+  while %x <= %bcount {
+    var %y %x + %bstart
+    var %header %header $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    inc %x
+  }
+
+  var %x 1
+  while %x <= %ccount {
+    var %y %x + %cstart
+    var %footer %footer $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    inc %x
+  }
+
+
+  var %eval,%endeval
+
+  ;var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ [ $fprop($mprop(%prop),2-) ] $+ [ , ]
+  ;var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
+
+  ;;;;;;;;;;;;;;;;;
   if !%isObjectCall {
     if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && $fprop($mprop(%prop)) == INIT) {
-      var %regex $+($,%class,.,$fprop($mprop(%prop)),$chr(40),$iif($fprop($mprop(%prop),2-),$v1 $+ $chr(44),$null $+ $chr(44)), $left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif($mprop(%prop,1),$+(.,$v1)))
-      return [ [ %regex ] ]
+      var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ $fprop($mprop(%prop),2-) $+ [ , ]
+      var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
     }
     else if $IsException(%class, $fprop($mprop(%prop))) {
-      var %regex $+($,%class,.,EXCEPTION.,$fprop($mprop(%prop)),$chr(40),$iif($fprop($mprop(%prop),2-),$v1 $+ $chr(44),$null $+ $chr(44)), $left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif($mprop(%prop,1),$+(.,$v1)))
-      return [ [ %regex ] ]
+      var %eval $ $+ %class $+ .EXCEPTION. $+ $fprop($mprop(%prop)) $+ [ ( ] $+ $fprop($mprop(%prop),2-) $+ [ , ]
+      var %endeval [ ) ] $+ . $+ $mprop(%prop,1)
+    }
+    else {
+      if ($IsInstance(%obejct))  {
+        UNMAKETOK
+        return $catch(%object, NoOperation, $scriptline, $token($token($script,-1,96),1,46), $qt($fprop($mprop(%prop))) is not a public member of class $qt(%class))
+      }
+      else {
+        UNMAKETOK
+        return $catch(Class, NoOperation, $scriptline, $token($token($script,-1,96),1,46), $qt($fprop($mprop(%prop))) is not a public member of class $qt(%class)).class
+      }
     }
   }
   else {
-    var %regex $+($,OBJECT,$chr(40),$left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif(%prop,$+(.,$v1)))
-    return [ [ %regex ] ]
+    var %eval $ $+ OBJECT $+ [ ( ]
+    var %endeval [ ) ] $+ . $+ $prop
   }
-  if $isInstance(%object) {
-    return $catch(%object,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop(%prop))) is not a public member of %Class)
-  }
-  else {
-    return $catch(%class, MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop(%prop))) is not a public member of %Class).class
-  }
+  ;;;;;;;;;;;;;;;;;
+
+  tokenize 255 %header $+ %footer
+
+  var %x 1
+  while %x <= $0 {
+
+    if %x == $0 {
+      var %eval %eval $+ [ $ $+ [ %x ] ]
+    }
+    else {
+      var %eval %eval $+ [ $ $+ [ %x ] ] $+ [ , ]
+    }
+    inc %x
+  }  
+  return [ [ %eval ] $+ [ %endeval ] ]
 }
 ;;;;;;;;;;;;;
 ; End meval ;
 ;;;;;;;;;;;;;
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Description: Called when ever an error is caught   ;
 ;                                                    ;
@@ -879,7 +1034,7 @@ alias -l meval {
 ;  an instance of class Player)                      ;
 ; }                                                  ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-alias CATCH {
+alias -l CATCH {
   var %error $2,%message $5,%instanceOrClass $1,%scriptLine $3, %scriptDir $4, %isClass $iif($mprop($prop) == class, $true,$false)
 
   if $isInstance(%instanceOrClass) && !%isClass {
@@ -888,41 +1043,41 @@ alias CATCH {
     while $token(%inheritance,%x,32) {
       var %currentClass $v1
       if $IsException(%currentClass,%error) {
-        var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-        maketok MAKETOK V %currentClass
-        maketok MAKETOK V $+(%error,.,$prop)
-        maketok MAKETOK V %instanceOrClass
-        var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+        var %astart $MAKETOKCOUNT
+        MAKETOK %currentClass
+        MAKETOK $+(%error,:,$token($token($script,-1,92),1,46),.,$prop)
+        MAKETOK %instanceOrClass
+        var %aend $MAKETOKCOUNT
 
-        var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-        var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+        var %bstart $MAKETOKCOUNT
+        var %bend $MAKETOKCOUNT
 
-        var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
-        maketok MAKETOK V $*
-        var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
-        return $catcheval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+        var %cstart $MAKETOKCOUNT + 1
+        MAKETOK $*
+        var %cend $MAKETOKCOUNT
+        return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
       }
       inc %x
     }
   }
   else if %isClass && $isClass(%instanceOrClass) {
     if $IsException(%instanceOrClass,%error) {
-      var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-      maketok MAKETOK V %instanceOrClass
-      maketok MAKETOK V $+(%error,.,$mprop($prop,1))
-      var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %astart $MAKETOKCOUNT
+      MAKETOK %instanceOrClass
+      MAKETOK $+(%error,:,$token($token($script,-1,92),1,46),.,$mprop($prop,1))
+      var %aend $MAKETOKCOUNT
 
-      var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-      var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %bstart $MAKETOKCOUNT
+      var %bend $MAKETOKCOUNT
 
-      var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
-      maketok MAKETOK V $*
-      var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+      var %cstart $MAKETOKCOUNT + 1
+      MAKETOK $*
+      var %cend $MAKETOKCOUNT
 
-      return $catcheval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
     }
   }
-  if ($hget(MAKETOK)) hfree MAKETOK
+  UNMAKETOK
 }
 ;;;;;;;;;;;;;
 ; End Catch ;
@@ -935,7 +1090,6 @@ alias CATCH {
 ; mSL++ Class Downloader and Installer ;
 ; code...                               ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 dialog -l mslPlusPlusDownloaderAndInstaller {
   title "mSL++ Downloader and Installer"
   size -1 -1 340 256
@@ -951,79 +1105,14 @@ dialog -l mslPlusPlusDownloaderAndInstaller {
   list 2, 3 96 202 50, size
   list 5, 3 171 335 72, size
 }
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; End mSL++ Class Downlaoder and Installer ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-
-;;;;;;;;;;;;;;;;;;
-; TEST FUNCTIONS ;
-;;;;;;;;;;;;;;;;;;
-
-alias example {
-  ;inputs:
-  ;any number of inputs / 4
-
-  var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-  maketok MAKETOK V MAKETOKTEST
-  maketok MAKETOK V $str(TEST., $floor($calc($0 / 4)))
-  var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
-
-  var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-  maketok MAKETOK V OBJECT_REFERENCE
-  var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
-
-  var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
-  maketok MAKETOK V $*
-  var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
-
-  return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
-}
-
-alias MAKETOKTEST.TEST {
-  var %object $1
-
-  echo -a -TEST-
-  echo -a OBJECT: %object
-  echo -a  $+ $2 @ $3
-  echo -a  $+ $4 @ $5
-  echo -a -END TEST-
-
-  if $prop {
-    var %astart $iif($hget(MAKETOK,COUNT),$v1,0)
-    maketok MAKETOK V maketoktest
-    maketok MAKETOK V $prop
-    var %aend $iif($hget(MAKETOK,COUNT),$v1,0)
-
-    var %bstart $iif($hget(MAKETOK,COUNT),$v1,0)
-    maketok MAKETOK V %object
-    var %bend $iif($hget(MAKETOK,COUNT),$v1,0)
-
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 6
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
-
-    echo -a TOKEN-COUNT $0 : A-START: %astart A-END: %aend B-START: %bstart B-END: %bend C-START: %cstart CEND: %cend
-    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
-  }
-  if ($hget(MAKETOK)) hfree MAKETOK
-}
-
-alias mSL++PrivateTest {
-  + $1 and $2
-  + ISALIS: $isalias($+($1,.,$2))
-  + ISPUBLIC $ispublic($1,$2)
-  + ISPRIVATE: $isprivate($1,$2)
-}
-;;;;;;;;;;;;;;;;;;;;;;
-; END TEST FUNCTIONS ;
-;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;
 ; Triggers ;
 ;;;;;;;;;;;;
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; START                                   ;
 ;                                         ;
@@ -1090,3 +1179,60 @@ alias ExportAllObjects {
 ;;;;;;;;;;;;;;;;
 ; END TRIGGERS ;
 ;;;;;;;;;;;;;;;;
+
+
+
+;;;;;;;;;;;;;;
+; DEPRECATED ;
+;;;;;;;;;;;;;;
+;alias -l meval {
+;  var %tokentable $1;
+;
+;  var %astart $2 + 1
+;  var %aend $3
+;  var %acount $calc(%aend - %astart + 1);;
+;
+;  var %bstart $4 + 1
+;  var %bend $5
+;  var %bcount $calc(%bend - %bstart + 1)
+;
+;  var %cstart $6
+;  var %cend $$7
+;  var %ccount $calc(%cend - %cstart + 1)
+;
+;  var %aregex $regsubex($str(.,%acount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %astart - 1),$chr(41),$chr(58)))
+;  var %bregex $regsubex($str(.,%bcount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %bstart - 1),$chr(41),$chr(58)))
+;  var %cregex $regsubex($str(.,%ccount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %cstart - 1),$chr(41),$chr(58)))
+;
+;  tokenize 58 %aregex
+;
+;  var %class [ [ $1 ] ]
+;  var %prop [ [ $2 ] ]
+;  var %object [ [ $3 ] ]
+;  var %isObjectCall [ [ $4 ] ]
+;
+;  if !%isObjectCall {
+;   if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && $fprop($mprop(%prop)) == INIT) {
+;     var %regex $+($,%class,.,$fprop($mprop(%prop)),$chr(40),$iif($fprop($mprop(%prop),2-),$v1 $+ $chr(44),$null $+ $chr(44)), $left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif($mprop(%prop,1),$+(.,$v1)))
+;
+;
+;
+;      return [ [ %regex ] ]
+;    }
+;    else if $IsException(%class, $fprop($mprop(%prop))) {
+;      var %regex $+($,%class,.,EXCEPTION.,$fprop($mprop(%prop)),$chr(40),$iif($fprop($mprop(%prop),2-),$v1 $+ $chr(44),$null $+ $chr(44)), $left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif($mprop(%prop,1),$+(.,$v1)))
+;      return [ [ %regex ] ]
+;    }
+;  }
+;  else {
+;    var %regex $+($,OBJECT,$chr(40),$left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif(%prop,$+(.,$v1)))
+;    return [ [ %regex ] ]
+;  }
+;  ;;;;unreachable code
+;  if $isInstance(%object) {
+;    return $catch(%object,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop(%prop))) is not a public member of %Class)
+;  }
+;  else {
+;    return $catch(%class, MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop(%prop))) is not a public member of %Class).class
+;  }
+;}
