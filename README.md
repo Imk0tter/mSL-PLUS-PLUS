@@ -230,9 +230,9 @@ alias -l CATCH {
     }
   }
   else if %isClass && $isClass(%instanceOrClass) {
-    if $IsException(%instanceOrClass) {
+    if $IsException(%instanceOrClass,%error) {
       var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-      maketok MAKETOK V %instanceOrClass $+ .EXCEPTION
+      maketok MAKETOK V %instanceOrClass
       maketok MAKETOK V $+(%error,.,$mprop($prop,1))
       var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
 
