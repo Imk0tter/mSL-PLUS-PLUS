@@ -111,7 +111,7 @@ alias -l List.FunctionName {
   ; Function code goes below ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   
-  if !%object {
+  if $IsInstance(%object) {
     return $catch(ClassName,ExceptionName,$scriptline,$token($token($script,-1,92),1,46),there is no object specified for function $qt(FunctionName)).class
   }
   else {
