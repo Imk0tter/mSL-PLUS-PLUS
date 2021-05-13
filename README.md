@@ -1,7 +1,7 @@
 # mSL++
 Imk0tter's object oriented mSL implementation: mSL++
 
-# Class Header
+## Class Header
 
 The class header is to be modified for every class; simply implement your own public functions and change the 'ClassName' to the name of your class.
 
@@ -147,7 +147,7 @@ alias -l List.FunctionName {
 ;;;;;;;;;;;;;;;;;;
 ````
 
-# Class Footer
+## Class Footer
 
 The class footer is to be appended to the end of every class.
 
@@ -307,7 +307,7 @@ alias -l CATCH {
 ;;;;;;;;;;;;;;;;;;;;
 ````
 
-# $meval
+## $meval
 
 To pass variables to the $meval function, call `maketok MAKETOK [V|B] [parameter]` between `%astart and %aend`
 
@@ -340,7 +340,7 @@ var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
 return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
 ````
 
-# $catch
+## $catch
 
 The catch function is used to handle errors in your classes. You call $catch where ever there's an error in your class.
 
@@ -356,7 +356,7 @@ else {
 }
 ````
 
-# $object
+## $object
 
 The object function calls the first found instance of the specified function in the class heirarchy.
 
