@@ -345,11 +345,14 @@ return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
 The catch function is used to handle errors in your classes. You call $catch where ever there's an error in your class.
 
 ````
-if ($IsInstance(%object)) {
+if (!$IsInstance(%object)) {
 return $catch(%object, Null, $scriptline, $token($token($script,-1,92),1,46), the object passed to this function is not an object!)
 }
-else {
+else if (%object) {
 return $catch(ClassName,ExceptionName,$scriptline,$token($token($script,-1,92),1,46),there is no object specified for function $qt(FunctionName)).class
+}
+else {
+;; Put your function code here ;;
 }
 ````
 
