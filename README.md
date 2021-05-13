@@ -301,6 +301,16 @@ Below is body where all the public functions are implemented...
 alias -l List.FunctionName {
   var %params $1
   var %object $2
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Function code goes below ;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  
+  ;;;;;;;;;;;;;;;;;;;;;
+  ; End Function Code ;
+  ;;;;;;;;;;;;;;;;;;;;;
+  
   if $prop {
     var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
     maketok MAKETOK V ClassName
