@@ -94,7 +94,52 @@ alias -l ClassName.INIT {
 ; END CLASS HEADER ;
 ;;;;;;;;;;;;;;;;;;;;
 ````
+# Class Body
 
+Below is body where all the public functions are implemented...
+
+
+````
+;;;;;;;;;;;;;;
+; Class Body ;
+;;;;;;;;;;;;;;
+alias -l List.FunctionName {
+  var %params $1
+  var %object $2
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Function code goes below ;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  
+  ;;;;;;;;;;;;;;;;;;;;;
+  ; End Function Code ;
+  ;;;;;;;;;;;;;;;;;;;;;
+  
+  if $prop {
+    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+    maketok MAKETOK V ClassName
+    maketok MAKETOK V $prop
+    maketok MAKETOK V %object
+    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+    ;maketok MAKETOK V %object
+    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
+    maketok MAKETOK V $*
+    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+}
+;;;;;;;;;;;;;;;;;;
+; End Class Body ;
+;;;;;;;;;;;;;;;;;;
+````
 
 # Class Footer
 
@@ -255,53 +300,6 @@ alias -l CATCH {
 ;;;;;;;;;;;;;;;;;;;;
 ; END CLASS FOOTER ;
 ;;;;;;;;;;;;;;;;;;;;
-````
-
-# Class Body
-
-Below is body where all the public functions are implemented...
-
-
-````
-;;;;;;;;;;;;;;
-; Class Body ;
-;;;;;;;;;;;;;;
-alias -l List.FunctionName {
-  var %params $1
-  var %object $2
-  
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; Function code goes below ;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
-  
-  ;;;;;;;;;;;;;;;;;;;;;
-  ; End Function Code ;
-  ;;;;;;;;;;;;;;;;;;;;;
-  
-  if $prop {
-    var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-    maketok MAKETOK V ClassName
-    maketok MAKETOK V $prop
-    maketok MAKETOK V %object
-    maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-    var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
-
-    var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-    ;maketok MAKETOK V %object
-    var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
-
-    var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 3
-    maketok MAKETOK V $*
-    var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
-
-    return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
-  }
-  if ($hget(MAKETOK)) hfree MAKETOK
-}
-;;;;;;;;;;;;;;;;;;
-; End Class Body ;
-;;;;;;;;;;;;;;;;;;
 ````
 
 # $meval
