@@ -83,10 +83,10 @@ alias List {
   else {
     if ($hget(MAKETOK)) hfree MAKETOK
     if $isinstance($1) {
-      return $catch($1,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop($prop))) is not a public member of class $qt(%class))
+      return $catch($1,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop($prop))) is not a public member of class $qt(%class))
     }
     else {
-      return $catch(%class,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop($prop))) is not a public member of class $qt(%Class)).class  
+      return $catch(%class,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop($prop))) is not a public member of class $qt(%Class)).class  
     }
   }
 }
@@ -116,10 +116,10 @@ alias -l List.COUNT {
   if (!$IsInstanceOf(%object, List)) {
     if ($hget(MAKETOK)) hfree MAKETOK
     if ($isInstance(%object)) {
-      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+      return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List))
     }
     else {
-      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+      return $catch(Class, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List)).class
     }
   }
 
@@ -172,14 +172,14 @@ alias -l List.REMOVE {
   if (!$IsInstanceOf(%object, List)) {
     if ($hget(MAKETOK)) hfree MAKETOK
     if ($isInstance(%object)) {
-      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+      return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List))
     }
     else {
-      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+      return $catch(Class, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List)).class
     }
   }
 
-  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET) }
+  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($token($script,-1,92),1,46),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET) }
   - $Class(%object, COUNT, $calc($Class(%object,COUNT).GET - 1)).SET
 
   bunset &items
@@ -223,14 +223,14 @@ alias -l List.INSERT {
   if (!$IsInstanceOf(%object, List)) {
     if ($hget(MAKETOK)) hfree MAKETOK
     if ($isInstance(%object)) {
-      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+      return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List))
     }
     else {
-      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+      return $catch(Class, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List)).class
     }
   }
 
-  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) }
+  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($token($script,-1,92),1,46),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) }
   - $Class(%object, COUNT, $calc($Class(%object,COUNT).GET + 1)).SET
   - $Class(%object, TOTAL, $calc($Class(%object,TOTAL).GET + 1)).SET
   var %value $base($Class(%object,TOTAL).GET,10,10,16)
@@ -274,10 +274,10 @@ alias -l List.ADD {
   if (!$IsInstanceOf(%object, List)) {
     if ($hget(MAKETOK)) hfree MAKETOK
     if ($isInstance(%object)) {
-      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+      return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List))
     }
     else {
-      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+      return $catch(Class, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List)).class
     }
   }
 
@@ -327,14 +327,14 @@ alias -l List.GET {
   if (!$IsInstanceOf(%object, List)) {
     if ($hget(MAKETOK)) hfree MAKETOK
     if ($isInstance(%object)) {
-      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+      return $catch(%Object, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List))
     }
     else {
-      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+      return $catch(Class, Null, $scriptline, $token($token($script,-1,92),1,46), object $qt(%object) is not an instance of class $qt(List)).class
     }
   }
   if %range !isnum $+(0,-,$Class(%object,COUNT).GET) { 
-    return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) 
+    return $catch(%object,RangeErr,$scriptline, $token($token($script,-1,92),1,46),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) 
 
   }
   $iif(%range == 0,return $Class(%object,COUNT).GET)
@@ -388,7 +388,7 @@ alias -l List.SET {
   var %obect $2
   var %range $3
   var %value $4
-  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) }
+  if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($token($script,-1,92),1,46),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) }
 
   bunset &items
   - $Class(%object,ITEMS,&items).GET:BVAR
@@ -626,10 +626,10 @@ alias -l meval {
     return [ [ %regex ] ]
   }
   if $isInstance(%object) {
-    return $catch(%object,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop(%prop))) is not a public member of %Class)
+    return $catch(%object,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop(%prop))) is not a public member of %Class)
   }
   else {
-    return $catch(%class, MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop(%prop))) is not a public member of %Class).class
+    return $catch(%class, MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop(%prop))) is not a public member of %Class).class
   }
 }
 ;;;;;;;;;;;;;
