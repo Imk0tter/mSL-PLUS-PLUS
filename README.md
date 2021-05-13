@@ -111,6 +111,12 @@ alias -l List.FunctionName {
   ; Function code goes below ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   
+  if !%object {
+    return $catch(ClassName,ExceptionName,$scriptline,$token($token($script,-2,92),1,46),there is no object specified for function $qt(FunctionName)).class
+  }
+  else {
+    retrun $catch(%object, ParamErr, $scriptline, $token($token($script,-2,92),1,46), the function $qt(FunctionName) of class $token($token($script,-2,92),1,46) has not yet been implemented!
+  }
   
   ;;;;;;;;;;;;;;;;;;;;;
   ; End Function Code ;
@@ -333,3 +339,8 @@ var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
 
 return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
 ````
+
+# $catch
+
+The catch function is used to handle errors in your classes. You call $catch where ever there's an error in your class.
+
