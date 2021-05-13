@@ -115,7 +115,7 @@ alias -l List.FunctionName {
     return $catch(ClassName,ExceptionName,$scriptline,$token($token($script,-1,92),1,46),there is no object specified for function $qt(FunctionName)).class
   }
   else {
-    retrun $catch(%object, Null, $scriptline, $token($token($script,-1,92),1,46), the function $qt(FunctionName) of class $token($token($script,-2,92),1,46) has not yet been implemented!
+    retrun $catch(%object, Null, $scriptline, $token($token($script,-1,92),1,46), the function $qt(FunctionName) of class $token($token($script,-2,92),1,46) has not yet been implemented!)
   }
   
   ;;;;;;;;;;;;;;;;;;;;;
@@ -343,4 +343,13 @@ return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
 # $catch
 
 The catch function is used to handle errors in your classes. You call $catch where ever there's an error in your class.
+
+````
+if ($IsInstance(%object)) {
+return $catch(%object, Null, $scriptline, $token($token($script,-1,92),1,46), the object passed to this function is not an object!)
+}
+else {
+return $catch(ClassName,ExceptionName,$scriptline,$token($token($script,-1,92),1,46),there is no object specified for function $qt(FunctionName)).class
+}
+````
 
