@@ -31,7 +31,8 @@ alias List.INSERT.PUBLIC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 alias List.EXCEPTION.RangeErr {
   var %params $1, %object $2, %error $3, %message $6, %scriptLine $4, %scriptDir $5
-  return Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
+  + Exception Caught on line $+($chr(40),%scriptLine,:,%scriptDir,$chr(41)) from Object ( $+ %object $+ : $+ $IsInstance(%object) $+ ): %error $+  - %message
+  return $null
 }
 ;;;;;;;;;;;;;;;;;;;;;;
 ; Main List Function ;
@@ -111,6 +112,17 @@ alias -l List.INIT {
 alias -l List.COUNT {
   var %params $1
   var %object $2
+
+  if (!$IsInstanceOf(%object, List)) {
+    if ($hget(MAKETOK)) hfree MAKETOK
+    if ($isInstance(%object)) {
+      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+    }
+    else {
+      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+    }
+  }
+
   if $prop {
     var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
     maketok MAKETOK V List
@@ -156,6 +168,17 @@ alias -l List.REMOVE {
   var %params $1
   var %object $2
   var %range $3
+
+  if (!$IsInstanceOf(%object, List)) {
+    if ($hget(MAKETOK)) hfree MAKETOK
+    if ($isInstance(%object)) {
+      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+    }
+    else {
+      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+    }
+  }
+
   if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET) }
   - $Class(%object, COUNT, $calc($Class(%object,COUNT).GET - 1)).SET
 
@@ -196,6 +219,17 @@ alias -l List.INSERT {
   var %object $2
   var %range $4
   var %variable $$3
+
+  if (!$IsInstanceOf(%object, List)) {
+    if ($hget(MAKETOK)) hfree MAKETOK
+    if ($isInstance(%object)) {
+      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+    }
+    else {
+      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+    }
+  }
+
   if %range !isnum 0- $+ $Class(%object,COUNT).GET { return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) }
   - $Class(%object, COUNT, $calc($Class(%object,COUNT).GET + 1)).SET
   - $Class(%object, TOTAL, $calc($Class(%object,TOTAL).GET + 1)).SET
@@ -236,6 +270,16 @@ alias -l List.ADD {
   var %params $1
   var %object $2
   var %value $3
+
+  if (!$IsInstanceOf(%object, List)) {
+    if ($hget(MAKETOK)) hfree MAKETOK
+    if ($isInstance(%object)) {
+      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+    }
+    else {
+      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+    }
+  }
 
   - $Class(%object,COUNT,$calc($Class(%object,COUNT).GET + 1)).SET
   - $Class(%object,TOTAL,$calc($Class(%object,TOTAL).GET + 1)).SET
@@ -280,7 +324,15 @@ alias -l List.GET {
   var %params $1
   var %object $2
   var %range $3
-
+  if (!$IsInstanceOf(%object, List)) {
+    if ($hget(MAKETOK)) hfree MAKETOK
+    if ($isInstance(%object)) {
+      return $catch(%Object, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List))
+    }
+    else {
+      return $catch(Class, Null, $scriptline, $token($script,-1,92), object $qt(%object) is not an instance of class $qt(List)).class
+    }
+  }
   if %range !isnum $+(0,-,$Class(%object,COUNT).GET) { 
     return $catch(%object,RangeErr,$scriptline, $token($script,-1,92),$qt(%range) is not a valid list index for object $qt(%object) $chr(40) $+ Valid Ranges: 0- $+ $class(%object,COUNT).GET $+ $chr(41)) 
 
@@ -620,9 +672,9 @@ alias -l CATCH {
     }
   }
   else if %isClass && $isClass(%instanceOrClass) {
-    if $IsException(%instanceOrClass) {
+    if $IsException(%instanceOrClass,%error) {
       var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-      maketok MAKETOK V %instanceOrClass $+ .EXCEPTION
+      maketok MAKETOK V %instanceOrClass
       maketok MAKETOK V $+(%error,.,$mprop($prop,1))
       var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
 
