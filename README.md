@@ -367,5 +367,12 @@ var %object $Class
 
 + $Class(%object,variable,value).get
 + $Class(%object, variable).get
+
+var %object2 $List
++ $Object(%object2,value).add
++ $Object(%object2,value2).add
+
++ $List(%object2, value3).add
++ $List(%object2, value4).add
 ````
 
