@@ -270,23 +270,23 @@ IE: `var %cstart $iif($hget(MAKETOK, COUNT),$v1,0) + 4` to start at the `$4`th t
 IE: `var %cstart $iif($hget(MAKETOK, COUNT),$v1,0) + 5` to start at the `$5`th token
 
 ````
-        var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-        maketok MAKETOK V Class
-        maketok MAKETOK V $prop
-        maketok MAKETOK V %object
-        maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-        var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+maketok MAKETOK V Class
+maketok MAKETOK V $prop
+maketok MAKETOK V %object
+maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
 
-        var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-        ;maketok MAKETOK V %object
-        var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+;maketok MAKETOK V %object
+var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
 
 
-        var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
-        maketok MAKETOK V $*
-        var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
+maketok MAKETOK V $*
+var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
 
-        return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
 ````
 
 # Class Body
