@@ -257,39 +257,6 @@ alias -l CATCH {
 ;;;;;;;;;;;;;;;;;;;;
 ````
 
-# $meval
-
-To pass variables to the $meval function, call `maketok MAKETOK [V|B] [parameter]` between `%astart and %aend`
-
-To pass variables to the fuction created by $meval, call `maketok MAKETOK [V|B] [parameter]`  between `%bstart and %bend`
-
-To pass the current array of tokens to $meval, set `%cstart` to the current `$hget(MAKETOK, COUNT)` to be `+ x` where `x` is the number of the starting token
-
-
-IE: `var %cstart $iif($hget(MAKETOK, COUNT),$v1,0) + 4` to start at the `$4`th token
-
-IE: `var %cstart $iif($hget(MAKETOK, COUNT),$v1,0) + 5` to start at the `$5`th token
-
-````
-var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
-maketok MAKETOK V Class
-maketok MAKETOK V $prop
-maketok MAKETOK V %object
-maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
-var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
-
-var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
-;maketok MAKETOK V %object
-var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
-
-
-var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
-maketok MAKETOK V $*
-var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
-
-return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
-````
-
 # Class Body
 
 Below is body where all the public functions are implemented...
@@ -335,4 +302,37 @@ alias -l List.FunctionName {
 ;;;;;;;;;;;;;;;;;;
 ; End Class Body ;
 ;;;;;;;;;;;;;;;;;;
+````
+
+# $meval
+
+To pass variables to the $meval function, call `maketok MAKETOK [V|B] [parameter]` between `%astart and %aend`
+
+To pass variables to the fuction created by $meval, call `maketok MAKETOK [V|B] [parameter]`  between `%bstart and %bend`
+
+To pass the current array of tokens to $meval, set `%cstart` to the current `$hget(MAKETOK, COUNT)` to be `+ x` where `x` is the number of the starting token
+
+
+IE: `var %cstart $iif($hget(MAKETOK, COUNT),$v1,0) + 4` to start at the `$4`th token
+
+IE: `var %cstart $iif($hget(MAKETOK, COUNT),$v1,0) + 5` to start at the `$5`th token
+
+````
+var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+maketok MAKETOK V Class
+maketok MAKETOK V $prop
+maketok MAKETOK V %object
+maketok MAKETOK V $cprop(%params,IS_OBJECT_CALL)
+var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+;maketok MAKETOK V %object
+var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+
+var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
+maketok MAKETOK V $*
+var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
 ````
