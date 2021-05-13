@@ -383,7 +383,7 @@ var %bend $MAKETOKCOUNT
 
 
 var %cstart $MAKETOKCOUNT + 1
-maketok $*
+MAKETOK $*
 var %cend $MAKETOKCOUNT
 
 return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
