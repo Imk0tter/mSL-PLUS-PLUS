@@ -295,6 +295,9 @@ Below is body where all the public functions are implemented...
 
 
 ````
+;;;;;;;;;;;;;;
+; Class Body ;
+;;;;;;;;;;;;;;
 alias -l List.FunctionName {
   var %params $1
   var %object $2
@@ -318,4 +321,7 @@ alias -l List.FunctionName {
   }
   if ($hget(MAKETOK)) hfree MAKETOK
 }
+;;;;;;;;;;;;;;;;;;
+; End Class Body ;
+;;;;;;;;;;;;;;;;;;
 ````
