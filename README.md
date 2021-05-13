@@ -282,80 +282,12 @@ IE: `var %cstart $iif($hget(MAKETOK, COUNT),$v1,0) + 5` to start at the `$5`th t
         var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
 
 
-        var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 5
+        var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
         maketok MAKETOK V $*
         var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
 
         return $meval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
 ````
-
-Below is the `$meval` function and helper functions `maketok`, `$mprop`, `$fprop`, and `$cprop`
-
-````
-alias meval {
-  var %tokentable $1
-
-  var %astart $2 + 1
-  var %aend $3
-  var %acount $calc(%aend - %astart + 1)
-
-  var %bstart $4 + 1
-  var %bend $5
-  var %bcount $calc(%bend - %bstart + 1)
-
-  var %cstart $6
-  var %cend $$7
-  var %ccount $calc(%cend - %cstart + 1)
-
-  var %aregex $regsubex($str(.,%acount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %astart - 1),$chr(41),$chr(58)))
-  var %bregex $regsubex($str(.,%bcount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %bstart - 1),$chr(41),$chr(58)))
-  var %cregex $regsubex($str(.,%ccount),/(.)/g,$+($,hget,$chr(40),%tokentable,$chr(44),$calc(\n + %cstart - 1),$chr(41),$chr(58)))
-
-  tokenize 58 %aregex
-
-  var %class [ [ $1 ] ]
-  var %prop [ [ $2 ] ]
-  var %object [ [ $3 ] ]
-  var %isObjectCall [ [ $4 ] ]
-
-
-  - CLASS: %class PROP: %prop OBJECT: %object FPROP: $fprop($mprop(%prop)) ISOBJECTCALL: %isObjectCall
-
-  if !%isObjectCall {
-    if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && ($fprop($mprop(%prop)) == INIT || $token(%class,2,46) == EXCEPTION))  {
-      var %regex $+($,%class,.,$fprop($mprop(%prop)),$chr(40),$iif($fprop($mprop(%prop),2-),$v1 $+ $chr(44),$null $+ $chr(44)), $left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif($mprop(%prop,1),$+(.,$v1)))
-      - REGEX1 %regex MAKETOK COUNT: $hget(MAKETOK,COUNT)
-      return [ [ %regex ] ]
-    }
-  }
-  else {
-    var %regex $+($,OBJECT,$chr(40),$left($replace(%bregex %cregex,$chr(58),$chr(32) $chr(44) $chr(32)),-5),$chr(41),$iif(%prop,$+(.,$v1)))
-    return [ [ %regex ] ]
-  }
-  if $isInstance(%object) {
-    return $catch(%object,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop(%prop))) is not a public member of %Class)
-  }
-  else {
-    return $catch(%class, MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop(%prop))) is not a public member of %Class).class
-  }
-}
-alias cprop {
-  return $istok($1,$$2,58)
-}
-alias mprop {
-  return $iif($2,$token($1,2-,46),$token($1,1,46))
-}
-alias fprop {
-  return $token($1,$iif($2,$2,1),58)
-}
-alias maketok {
-  hinc -m $1 COUNT
-  hadd -m $+ $iif($2 == B,b) $1 $hget($1,COUNT) $3-
-}
-````
-
-
-
 
 # Class Body
 
