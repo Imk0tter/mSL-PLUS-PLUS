@@ -168,7 +168,7 @@ alias -l IsPrivate return $iif($IsClass($1) && $isalias($+($1.,$2)),$true,$false
 ; Usage: $IsException(<Class>,<Member>)              ;
 ; Example: if ($IsExceptiion(%class,Null)) ..        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-alias IsException return $iif($isalias($+($1,.EXCEPTION.,$$2)),$true,$false)
+alias -l IsException return $iif($isalias($+($1,.EXCEPTION.,$$2)),$true,$false)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Code for passing dynamic variables to the $meval function ;
