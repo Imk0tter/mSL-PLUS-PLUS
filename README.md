@@ -161,6 +161,15 @@ alias -l + { $iif($Window(@Debug),echo @Debug,!noop) $iif($1-,$v1,$crlf) }
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 alias -l IsPrivate return $iif($IsClass($1) && $isalias($+($1.,$2)),$true,$false)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Description: Returns whether or not a class member ;
+; is an exception.                                   ;
+;                                                    ;
+; Usage: $IsException(<Class>,<Member>)              ;
+; Example: if ($IsExceptiion(%class,Null)) ..        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+alias IsException return $iif($isalias($+($1,.EXCEPTION.,$$2)),$true,$false)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Code for passing dynamic variables to the $meval function ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -229,6 +238,63 @@ alias -l meval {
 }
 ;;;;;;;;;;;;;
 ; End meval ;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Description: Called when ever an error is caught   ;
+;                                                    ;
+; Usage: $catch(<Instance>,<Error>,<Message>)        ;
+; Example: if (!$IsInstanceOf(%Player,Player)) {     ;
+; $catch(%Player,InstanceErr,Object %player is not   ;
+;  an instance of class Player)                      ;
+; }                                                  ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+alias CATCH {
+  var %error $2,%message $5,%instanceOrClass $1,%scriptLine $3, %scriptDir $4, %isClass $iif($mprop($prop) == class, $true,$false)
+
+  if $isInstance(%instanceOrClass) && !%isClass {
+    var %x 1
+    var %inheritance $hget(MSL++,$+(%instanceOrClass,_,INIT))
+    while $token(%inheritance,%x,32) {
+      var %currentClass $v1
+      if $IsException(%currentClass,%error) {
+        var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+        maketok MAKETOK V %currentClass
+        maketok MAKETOK V $+(%error,.,$prop)
+        maketok MAKETOK V %instanceOrClass
+        var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+        var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+        var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+        var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
+        maketok MAKETOK V $*
+        var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+        return $catcheval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+      }
+      inc %x
+    }
+  }
+  else if %isClass && $isClass(%instanceOrClass) {
+    if $IsException(%instanceOrClass,%error) {
+      var %astart $iif($hget(MAKETOK, COUNT),$v1,0)
+      maketok MAKETOK V %instanceOrClass
+      maketok MAKETOK V $+(%error,.,$mprop($prop,1))
+      var %aend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+      var %bstart $iif($hget(MAKETOK, COUNT),$v1,0)
+      var %bend $iif($hget(MAKETOK, COUNT),$v1,0)
+
+      var %cstart $iif($hget(MAKETOK,COUNT),$v1,0) + 1
+      maketok MAKETOK V $*
+      var %cend $iif($hget(MAKETOK,COUNT),$v1,0)
+
+      return $catcheval(MAKETOK,%astart,%aend,%bstart,%bend,%cstart,%cend)
+    }
+  }
+  if ($hget(MAKETOK)) hfree MAKETOK
+}
+;;;;;;;;;;;;;
+; End Catch ;
 ;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;
 ; END CLASS FOOTER ;
