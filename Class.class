@@ -278,7 +278,7 @@ alias -l Class.GET {
       }
     }
     else {
-      if (!$hget(%object,%variableName)) {
+      if ($hget(%object,%variableName) == $null) {
         return $catch(%object,MemberErr,$scriptline,$token($token($script,-1,92),1,46),$qt(%variableName) is not a valid member of object $qt(%object))
       }
       else {

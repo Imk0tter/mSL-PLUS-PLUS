@@ -95,9 +95,9 @@ alias List {
 alias -l List.INIT {
   var %params $1
   var %object $2
-  
+
   var %instance $iif(%object,$v1,$class)
-  
+
   - $class(%instance,COUNT,0).set
   - $class(%instance,TOTAL,0).set
   ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -240,12 +240,11 @@ alias -l List.INSERT {
 
   bunset &items
   - $Class(%object,ITEMS,&items).GET:BVAR
-
   var %x $calc(1 + ((%range - 1) * 16)),%y $calc(%x + 16)
   bcopy &items %y &items %x -1
   bset -at &items %x %value
-  - $Class($1,%value,%variable).SET
-  - $Class($1,ITEMS,&items).SET:BVAR
+  - $Class(%object,%value,%variable).SET
+  - $Class(%object,ITEMS,&items).SET:BVAR
 
   if $prop {
     var %astart $MAKETOKCOUNT
@@ -266,7 +265,7 @@ alias -l List.INSERT {
     return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
   }
   UNMAKETOK
-  return %variable
+  return $class(%object,TOTAL).get
 }
 
 alias -l List.ADD {
@@ -610,7 +609,7 @@ alias -l meval {
   }
 
   tokenize 255 %localVariables
-  
+
   var %class [ [ $1 ] ]
   var %prop [ [ $2 ] ]
   var %object [ [ $3 ] ]
@@ -665,7 +664,7 @@ alias -l meval {
   ;;;;;;;;;;;;;;;;;
 
   tokenize 255 %header $+ %footer
-  
+
   var %x 1
   while %x <= $0 {
     if %x == $0 {
