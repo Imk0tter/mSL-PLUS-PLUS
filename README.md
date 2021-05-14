@@ -209,6 +209,10 @@ alias -l meval {
   var %cend $$6
   var %ccount %cend - %cstart
 
+  var %dstart $7
+  var %dend $8
+  var %dcount %dend - %dstart
+
   var %localVariables
 
   var %x 1
@@ -217,15 +221,15 @@ alias -l meval {
     var %localVariables %localVariables $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
     inc %x
   }
-  
+
   tokenize 255 %localVariables
-    
+
   var %class [ [ $1 ] ]
   var %prop [ [ $2 ] ]
   var %object [ [ $3 ] ]
   var %isObjectCall [ [ $4 ] ]
 
-  var %header,%footer 
+  var %header,%footer,%body
 
   var %x 1
   while %x <= %bcount {
@@ -237,17 +241,22 @@ alias -l meval {
   var %x 1
   while %x <= %ccount {
     var %y %x + %cstart
-    var %footer %footer $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    var %body %body $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
     inc %x
   }
 
+  var %x 1
+  while %x <= %dcount {
+    var %y %x + %dstart
+    var %footer %footer $+ $chr(255) $+ $ + getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+  }
 
   var %eval,%endeval
 
-  ;var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ [ $fprop($mprop(%prop),2-) ] $+ [ , ]
-  ;var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
+  ;;var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ [ $fprop($mprop(%prop),2-) ] $+ [ , ]
+  ;;var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
 
-  ;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;
   if !%isObjectCall {
     if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && $fprop($mprop(%prop)) == INIT) {
       var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ $fprop($mprop(%prop),2-) $+ [ , ]
@@ -274,11 +283,10 @@ alias -l meval {
   }
   ;;;;;;;;;;;;;;;;;
 
-  tokenize 255 %header $+ %footer
+  tokenize 255 %header $+ %body $+ %footer
 
   var %x 1
   while %x <= $0 {
-
     if %x == $0 {
       var %eval %eval $+ [ $ $+ [ %x ] ]
     }
@@ -323,7 +331,12 @@ alias -l CATCH {
         var %cstart $MAKETOKCOUNT + 1
         MAKETOK $*
         var %cend $MAKETOKCOUNT
-        return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+
+        var %dstart $MAKETOKCOUNT
+        ; For what ever comes after the tokens
+        var %dend $MAKETOKCOUNT
+
+        return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
       }
       inc %x
     }
@@ -342,7 +355,11 @@ alias -l CATCH {
       MAKETOK $*
       var %cend $MAKETOKCOUNT
 
-      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+      var %dstart $MAKETOKCOUNT
+      ; For what ever comes dynamic set of paramters that come after the tokens
+      var %dend $MAKETOKCOUNT
+
+      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
     }
   }
   UNMAKETOK
@@ -350,7 +367,6 @@ alias -l CATCH {
 ;;;;;;;;;;;;;
 ; End Catch ;
 ;;;;;;;;;;;;;
-
 ;;;;;;;;;;;;;;;;;;;;
 ; END CLASS FOOTER ;
 ;;;;;;;;;;;;;;;;;;;;
