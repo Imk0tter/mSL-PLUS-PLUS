@@ -79,10 +79,10 @@ alias ClassName {
   else {
     UNMAKETOK
     if $isinstance($1) {
-      return $catch($1,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop($prop))) is not a public member of class $qt(%class))
+      return $catch($1,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop($prop))) is not a public member of class $qt(%class))
     }
     else {
-      return $catch(%class,MemberErr, $scriptline, $token($script,-1,92), $qt($fprop($mprop($prop))) is not a public member of class $qt(%Class)).class  
+      return $catch(%class,MemberErr, $scriptline, $token($token($script,-1,92),1,46), $qt($fprop($mprop($prop))) is not a public member of class $qt(%Class)).class  
     }
   }
 }
