@@ -402,7 +402,12 @@ var %cstart $MAKETOKCOUNT + 1
 MAKETOK $*
 var %cend $MAKETOKCOUNT
 
-return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+var %dstart $MAKETOKCOUNT
+MAKETOK extravar1
+MAKETOK extravar2
+var %dend $MAKETOKCOUNT
+
+return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
 ````
 
 # $catch
