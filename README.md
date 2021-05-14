@@ -43,7 +43,11 @@ alias ClassName {
       MAKETOK $*
       var %cend $MAKETOKCOUNT
 
-      var %object $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+      var %dstart $MAKETOKCOUNT
+      ; For what ever comes after the tokens
+      var %dend $MAKETOKCOUNT
+      
+      var %object $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
       - $inheritsFrom(%object,%Class)
       UNMAKETOK
       return %object
@@ -65,8 +69,12 @@ alias ClassName {
     var %cstart $MAKETOKCOUNT + 1
     MAKETOK $*
     var %cend $MAKETOKCOUNT
+    
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   else {
     UNMAKETOK
@@ -139,7 +147,12 @@ alias -l List.FunctionName {
     var %cstart $MAKETOKCOUNT + 3
     MAKETOK $*
     var %cend $MAKETOKCOUNT
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   UNMAKETOK
 }
@@ -394,7 +407,9 @@ MAKETOK $cprop(%params,IS_OBJECT_CALL)
 var %aend $MAKETOKCOUNT
 
 var %bstart $MAKETOKCOUNT
-;maketok %object
+MAKETOK FIRSTVAR
+MAKETOK SECONDVAR
+MAKETOK THIRDVAR
 var %bend $MAKETOKCOUNT
 
 
