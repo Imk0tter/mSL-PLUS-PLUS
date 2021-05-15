@@ -54,7 +54,11 @@ alias List {
       MAKETOK $*
       var %cend $MAKETOKCOUNT
 
-      var %object $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+      var %dstart $MAKETOKCOUNT
+      ; For what ever comes after the tokens
+      var %dend $MAKETOKCOUNT
+
+      var %object $meval(%astart,%aend,%bstart,%bend,%cstart,%cend, %dstart, %dend)
       - $inheritsFrom(%object,%Class)
       UNMAKETOK
       return %object
@@ -77,7 +81,12 @@ alias List {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend, %dstart, %dend)
   }
   else {
     UNMAKETOK
@@ -142,7 +151,12 @@ alias -l List.COUNT {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend, %dstart, %dend)
   }
   UNMAKETOK
   return $class(%object,COUNT).GET
@@ -164,7 +178,11 @@ alias -l List.UNSET {
   MAKETOK $*
   var %cend $MAKETOKCOUNT
 
-  return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+  var %dstart $MAKETOKCOUNT
+  ; For what ever comes after the tokens
+  var %dend $MAKETOKCOUNT
+
+  return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart, %dend)
 }
 
 alias -l List.REMOVE {
@@ -211,8 +229,13 @@ alias -l List.REMOVE {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
+  
   UNMAKETOK
   return $class(%object,Count).GET
 }
@@ -262,7 +285,11 @@ alias -l List.INSERT {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   UNMAKETOK
   return $class(%object,TOTAL).get
@@ -316,7 +343,11 @@ alias -l List.ADD {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   UNMAKETOK
   return $Class(%object,Count).GET
@@ -378,7 +409,11 @@ alias -l List.GET {
     $iif(!$cprop(%params,STACK),MAKETOK %return)
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   UNMAKETOK
   return %return
@@ -415,7 +450,11 @@ alias -l List.SET {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
 
   UNMAKETOK
@@ -455,7 +494,11 @@ alias -l List.IMPORT {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   UNMAKETOK
 }
@@ -493,7 +536,11 @@ alias -l List.EXPORT {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   UNMAKETOK
   bwrite $+($mircdir,MSL++,\,%object,.items) 1 -1 &data
@@ -534,7 +581,11 @@ alias -l List.FREE {
     MAKETOK $*
     var %cend $MAKETOKCOUNT
 
-    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+    var %dstart $MAKETOKCOUNT
+    ; For what ever comes after the tokens
+    var %dend $MAKETOKCOUNT
+
+    return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
   }
   UNMAKETOK
   return $Class(%object).FREE
@@ -599,6 +650,10 @@ alias -l meval {
   var %cend $$6
   var %ccount %cend - %cstart
 
+  var %dstart $7
+  var %dend $8
+  var %dcount %dend - %dstart
+
   var %localVariables
 
   var %x 1
@@ -615,7 +670,7 @@ alias -l meval {
   var %object [ [ $3 ] ]
   var %isObjectCall [ [ $4 ] ]
 
-  var %header,%footer 
+  var %header,%footer,%body
 
   var %x 1
   while %x <= %bcount {
@@ -627,16 +682,22 @@ alias -l meval {
   var %x 1
   while %x <= %ccount {
     var %y %x + %cstart
-    var %footer %footer $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
+    var %body %body $+ $chr(255) $+ $ $+ getmaketok $+ [ ( ] $+ %y $+ [ ) ]
     inc %x
+  }
+
+  var %x 1
+  while %x <= %dcount {
+    var %y %x + %dstart
+    var %footer %footer $+ $chr(255) $+ $ + getmaketok $+ [ ( ] $+ %y $+ [ ) ]
   }
 
   var %eval,%endeval
 
-  ;var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ [ $fprop($mprop(%prop),2-) ] $+ [ , ]
-  ;var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
+  ;;var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ [ $fprop($mprop(%prop),2-) ] $+ [ , ]
+  ;;var %endeval [ ) ] $+ . $+ [ $mprop(%prop,1) ]
 
-  ;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;
   if !%isObjectCall {
     if $isPublic(%class,$fprop($mprop(%prop))) || ($isPrivate(%class,$fprop($mprop(%prop))) && $fprop($mprop(%prop)) == INIT) {
       var %eval $ $+ %class $+ . $+ $fprop($mprop(%prop)) $+ [ ( ] $+ $fprop($mprop(%prop),2-) $+ [ , ]
@@ -663,7 +724,7 @@ alias -l meval {
   }
   ;;;;;;;;;;;;;;;;;
 
-  tokenize 255 %header $+ %footer
+  tokenize 255 %header $+ %body $+ %footer
 
   var %x 1
   while %x <= $0 {
@@ -711,7 +772,12 @@ alias -l CATCH {
         var %cstart $MAKETOKCOUNT + 1
         MAKETOK $*
         var %cend $MAKETOKCOUNT
-        return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+
+        var %dstart $MAKETOKCOUNT
+        ; For what ever comes after the tokens
+        var %dend $MAKETOKCOUNT
+
+        return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
       }
       inc %x
     }
@@ -730,7 +796,11 @@ alias -l CATCH {
       MAKETOK $*
       var %cend $MAKETOKCOUNT
 
-      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend)
+      var %dstart $MAKETOKCOUNT
+      ; For what ever comes after the tokens
+      var %dend $MAKETOKCOUNT
+
+      return $meval(%astart,%aend,%bstart,%bend,%cstart,%cend,%dstart,%dend)
     }
   }
   UNMAKETOK
