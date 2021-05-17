@@ -113,7 +113,7 @@ Below is body where all the public functions are implemented...
 ;;;;;;;;;;;;;;
 ; Class Body ;
 ;;;;;;;;;;;;;;
-alias -l List.FunctionName {
+alias -l ClassName.FunctionName {
   var %params $1
   var %object $2
   
