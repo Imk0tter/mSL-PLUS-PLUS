@@ -226,6 +226,7 @@ alias -l Class.SET {
     return $catch(%object,ParamErr,$scriptline, $token($token($script,-1,92),1,46), there is no variable specified for this set call!)
   }
   UNMAKETOK
+  return %value
 }
 
 alias -l Class.GET {
