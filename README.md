@@ -33,7 +33,7 @@ alias ClassName {
 
       var %astart $MAKETOKCOUNT
       MAKETOK %Class
-      MAKETOK MAKETOK V INIT
+      MAKETOK INIT
       var %aend $MAKETOKCOUNT
 
       var %bstart $MAKETOKCOUNT
